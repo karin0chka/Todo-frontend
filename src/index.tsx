@@ -1,20 +1,41 @@
+import { ChakraProvider } from '@chakra-ui/react';
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from './App.tsx';
-import reportWebVitals from "./reportWebVitals";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ChakraProvider } from '@chakra-ui/react'
+import App from './App';
+import reportWebVitals from "./reportWebVitals";
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import Home from './pages/Home.page';
+
+
+
 
 const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        path: "/home",
+        element: <Home />,
+      },
+    ],
+  },
+]);
+
+
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ChakraProvider>
-        <App />
+        <RouterProvider router={router} />
       </ChakraProvider>
     </QueryClientProvider>
+
   </React.StrictMode>
 );
 

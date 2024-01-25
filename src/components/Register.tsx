@@ -1,8 +1,8 @@
-import { Button, Input, FormControl } from '@chakra-ui/react';
-import React, { useState } from "react";
-import { useMutation } from "react-query";
+import { Button, FormControl, Input } from '@chakra-ui/react';
 import axios from 'axios';
-import { IUser } from '../../interfaces/user.interfaces'
+import { useState } from "react";
+import { useMutation } from "react-query";
+import { IUser } from '../../interfaces/user.interfaces';
 
 export default function Register() {
     const [firstName, setFirstName] = useState("");
