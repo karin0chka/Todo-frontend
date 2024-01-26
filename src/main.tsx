@@ -2,13 +2,12 @@ import { ChakraProvider } from '@chakra-ui/react';
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
-import App from './App';
-import reportWebVitals from "./reportWebVitals";
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter, redirect } from 'react-router-dom';
+import Login from './components/Login';
+import Register from './components/Register';
 import Home from './pages/Home.page';
-
-
-
+import Dashboard from './pages/Dashboard';
+import { LocalStorage } from './utils/handlers';
 
 const queryClient = new QueryClient();
 
@@ -17,14 +16,27 @@ const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-    children: [
-      {
-        path: "/home",
-        element: <Home />,
-      },
-    ],
+    element: <Home />,
   },
+
+  {
+    path: "/register",
+    element: <Register />,
+    loader: () => {
+      const user = LocalStorage.getUser();
+      if (user) return redirect('/dashboard');
+      return null;
+    },
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />
+  }
+
 ]);
 
 
@@ -35,11 +47,5 @@ root.render(
         <RouterProvider router={router} />
       </ChakraProvider>
     </QueryClientProvider>
-
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

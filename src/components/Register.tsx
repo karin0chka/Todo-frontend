@@ -1,25 +1,38 @@
 import { Button, FormControl, Input } from '@chakra-ui/react';
-import axios from 'axios';
 import { useState } from "react";
 import { useMutation } from "react-query";
+import { Link } from 'react-router-dom';
+import api from '../utils/api';
+import Footer from './Footer';
+import Header from './Header';
+import { LocalStorage } from '../utils/handlers';
 import { IUser } from '../../interfaces/user.interfaces';
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+    const [first_name, setFirstName] = useState("");
+    const [last_name, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const mutation = useMutation(
-        (userDto: IUser) => axios.post("/auth/register", userDto),
-        {
-            mutationKey: "registerUser",
-        }
-    );
+    const navigate = useNavigate();
 
 
-    const submitData = () => {
-        mutation.mutate({ firstName, lastName, email, password });
+    const mutation = useMutation({
+        mutationFn: api.Auth.registerUser
+    })
+
+
+    const submitData = (e: any) => {
+        e.preventDefault()
+        console.log('trigger')
+        mutation.mutate({ first_name, last_name, email, password })
+        LocalStorage.saveUser({
+            first_name: first_name,
+            last_name: last_name,
+            email: email
+        } as IUser)
+        navigate('/dashboard');
     };
 
     if (mutation.isLoading) {
@@ -37,32 +50,50 @@ export default function Register() {
 
     return (
         <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: '100vh'
+            minHeight: "100%",
+            width: "100%",
+            height: "100vh",
+            overflow: "hidden",
+            display: "grid",
+            gridTemplateRows: "5% 90% 5%",
+            color: "#4f6b7c",
         }}>
-            <FormControl display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                gap={4}
-                w="50%"
-                h="40%"
-                padding="10px"
-                color="black"
-                background="#e6dace"
-                boxShadow="rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"
-                borderRadius="10px"
-                onSubmit={submitData}
-            >
-                <Input focusBorderColor="#b4b1b0" placeholder="Enter your first name" value={firstName} onChange={(e) => setFirstName(e.target.value)} ></Input>
-                <Input focusBorderColor="#b4b1b0" placeholder="Enter your last name" value={lastName} onChange={(e) => setLastName(e.target.value)} ></Input>
-                <Input type='email' focusBorderColor="#b4b1b0" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} ></Input>
-                <Input type='password' focusBorderColor="#b4b1b0" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} ></Input>
-                <Button type='submit' color="black" background="#90e0ef">Register</Button>
-            </FormControl >
+            <Header />
+            <form style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: '100vh'
+            }} onSubmit={submitData}>
+                <FormControl display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    gap={15}
+                    w="50%"
+                    h="40%"
+                    padding="10px"
+                    color="black"
+                    background="#f5f2fe"
+                    boxShadow="rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"
+                    borderRadius="10px"
+                >
+                    <Input type="text" id="firstName" focusBorderColor="#b4b1b0" placeholder="Enter your first name" value={first_name} onChange={(e) => setFirstName(e.target.value)} />
+                    <Input type="text" id="secondName" focusBorderColor="#b4b1b0" placeholder="Enter your last name" value={last_name} onChange={(e) => setLastName(e.target.value)} />
+                    <Input type='email' id="email" focusBorderColor="#b4b1b0" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <Input type='password' id="password" focusBorderColor="#b4b1b0" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <Button type='submit' id="submit" background="#caf0f8" color="#4f6b7c" fontSize="25px">Register</Button>
 
-        </div>
+                    <Link to="/login" style={{
+                        color: "#4f6b7c",
+                        fontFamily: "cursive",
+                        fontSize: "20px"
+                    }}>Already have an account</Link>
+                </FormControl >
+            </form>
+
+            <Footer />
+        </ div>
+
     )
 }

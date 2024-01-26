@@ -1,22 +1,40 @@
 import axios from "axios";
 import config from "./config";
+import { IUser } from "../../interfaces/user.interfaces";
 
 const api = config.API;
+
 const userId = 1;
 const reportId = 1;
+axios.defaults.withCredentials = true;
 
+axios.interceptors.response.use(
+  function (response) {
+    console.log("Response interceptor:", response);
+    return response;
+  },
+  function (error) {
+    if (error.response.status === 401) {
+      console.error(error);
+      return "Please try again";
+    } else {
+      return Promise.reject(error);
+    }
+  }
+);
 // Auth request
 namespace Auth {
   export async function checkConnection() {
-    console.log(api);
-    const response = await axios.get(`${api}/health`);
+    return (await axios.get(`${api}/health`)).data;
+  }
+  export async function registerUser(userDto: IUser) {
+    console.log(`${api}/auth/register`);
+    const response = await axios.post(`${api}/auth/register`, userDto);
+    console.log(response.data);
     return response.data;
   }
-  export async function register() {
-    const response = await axios.post(`${api}/auth/register`);
-    return response.data;
-  }
-  export async function login() {
+
+  export async function loginUser() {
     const response = await axios.post(`${api}/auth/login`);
     return response.data;
   }
@@ -85,29 +103,4 @@ namespace Report {
   }
 }
 
-axios.interceptors.request.use(
-  function (config) {
-    console.log("Response interceptor:", config);
-    return config;
-  },
-  function (error) {
-    console.error(error);
-    return Promise.reject(error);
-  }
-);
-
-axios.interceptors.response.use(
-  function (response) {
-    console.log("Response interceptor:", response);
-    return response;
-  },
-  function (error) {
-    if (error.response.status === 401) {
-      console.error(error);
-      return "Please try again";
-    } else {
-      return Promise.reject(error);
-    }
-  }
-);
 export default { Auth, User, Todo, Report };
