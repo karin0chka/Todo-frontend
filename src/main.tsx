@@ -5,8 +5,10 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { RouterProvider, createBrowserRouter, redirect } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
-import Home from './pages/Home.page';
+import './global.css';
+import Auth from './pages/Auth.page';
 import Dashboard from './pages/Dashboard';
+import Home from './pages/Home.page';
 import { LocalStorage } from './utils/handlers';
 
 const queryClient = new QueryClient();
@@ -18,7 +20,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <Home />,
   },
-
+  {
+    path: "/auth",
+    element: <Auth />,
+  },
   {
     path: "/register",
     element: <Register />,
@@ -31,6 +36,11 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+    loader: () => {
+      const user = LocalStorage.getUser();
+      if (user) return redirect('/dashboard');
+      return null;
+    },
   },
   {
     path: "/dashboard",
