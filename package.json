@@ -41,7 +41,7 @@
     "bracketSameLine": true,
     "bracketSpacing": true,
     "tabWidth": 2,
-    "printWidth": 100,
+    "printWidth": 80,
     "trailingComma": "es5",
     "semi": false,
     "singleQuote": false,
