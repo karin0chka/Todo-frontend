@@ -1,19 +1,47 @@
 import { Button, FormControl, Input } from "@chakra-ui/react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useMutation } from "react-query"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { IUser } from "../../interfaces/user.interfaces"
 import api from "../utils/api"
 import { LocalStorage } from "../utils/handlers"
+import { rules } from "../utils/validation"
 
 export default function Register() {
   const [first_name, setFirstName] = useState("")
   const [last_name, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [repeatPassworld, setRepeatedPassworld] = useState("")
   const [_, setSearchParams] = useSearchParams()
 
   const navigate = useNavigate()
+
+  function validateName(type: "first_name" | "last_name") {
+    const name = type === "first_name" ? first_name : last_name
+    return rules.required(name) && rules.nameMinLength(name) && rules.nameMaxLength(name)
+  }
+  function validateEmail() {
+    return rules.email(email) && rules.emailMaxLength(email)
+  }
+  function validatePassword() {
+    return rules.strongPasswordCheck(password)
+  }
+  function validateRepeatPassword() {
+    return rules.comparePasswords(password, repeatPassworld)
+  }
+  console.log(password, repeatPassworld)
+
+  const isFormValid = useMemo(() => {
+    const validations = [
+      validateName("first_name"),
+      validateName("last_name"),
+      validateEmail(),
+      validatePassword(),
+      validateRepeatPassword(),
+    ]
+    return validations.every((v) => !!v && typeof v === "boolean")
+  }, [first_name, last_name, email, password])
 
   const mutation = useMutation({
     mutationFn: api.Auth.registerUser,
@@ -92,7 +120,14 @@ export default function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {/* Where is repeat password + compare????? */}
+        <Input
+          type="password"
+          id="repeatPassword"
+          focusBorderColor="#b4b1b0"
+          placeholder="Repeat your password"
+          value={repeatPassworld}
+          onChange={(e) => setRepeatedPassworld(e.target.value)}
+        />
         {mutation.isError ? (
           <span>Error happend</span>
         ) : (
@@ -102,7 +137,7 @@ export default function Register() {
             background="#caf0f8"
             color="#4f6b7c"
             isLoading={mutation.isLoading}
-            isDisabled={true}
+            isDisabled={!isFormValid}
             fontSize="25px">
             Register
           </Button>
