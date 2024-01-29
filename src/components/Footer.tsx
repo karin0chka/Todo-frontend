@@ -9,5 +9,5 @@ const style: React.CSSProperties = {
   fontSize: 35,
   fontFamily: "cursive",
   color: "#4f6b7c",
-  height:"50px"
+  height: "50px",
 }

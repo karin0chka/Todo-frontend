@@ -1,7 +1,8 @@
-
-
+import style from "../style.module.css"
 export default function Dashboard() {
-    return (
-        <div></div>
-    )
+  return (
+    <main
+      className={style.wrapper}
+      style={{ flexGrow: 1 }}></main>
+  )
 }

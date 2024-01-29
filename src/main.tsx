@@ -8,6 +8,8 @@ import Auth from "./pages/Auth.page"
 import Dashboard from "./pages/Dashboard"
 import Home from "./pages/Home.page"
 import { LocalStorage } from "./utils/handlers"
+import Header from "./components/Header"
+import Footer from "./components/Footer"
 
 const queryClient = new QueryClient()
 
@@ -30,7 +32,13 @@ const router = createBrowserRouter([
 
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: (
+      <>
+        <Header />
+        <Dashboard />
+        <Footer />
+      </>
+    ),
   },
 ])
 

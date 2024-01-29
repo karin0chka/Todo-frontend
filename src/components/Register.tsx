@@ -1,199 +1,204 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
-  InputGroup,
-  InputRightElement,
 } from "@chakra-ui/react"
-import { useMemo, useState } from "react"
+import { Field, Form, Formik } from "formik"
 import { useMutation } from "react-query"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { IUser } from "../../interfaces/user.interfaces"
+import * as Yup from "yup"
 import api from "../utils/api"
 import { LocalStorage } from "../utils/handlers"
-import { rules } from "../utils/validation"
+import style from "../style.module.css"
 
 export default function Register() {
-  const [first_name, setFirstName] = useState("")
-  const [last_name, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShow] = useState(false)
-  const [repeatPassword, setRepeatedPassword] = useState("")
   const [_, setSearchParams] = useSearchParams()
 
   const navigate = useNavigate()
-
-  function validateName(type: "first_name" | "last_name") {
-    const name = type === "first_name" ? first_name : last_name
-    return (
-      rules.required(name) &&
-      rules.nameMinLength(name) &&
-      rules.nameMaxLength(name)
-    )
-  }
-  function validateEmail() {
-    return (
-      rules.required(email) && rules.email(email) && rules.emailMaxLength(email)
-    )
-  }
-  function validatePassword() {
-    return rules.strongPasswordCheck(password)
-  }
-  function validateRepeatPassword() {
-    return rules.comparePasswords(password, repeatPassword)
-  }
-
-  const isFormValid = useMemo(() => {
-    const validations = [
-      validateName("first_name"),
-      validateName("last_name"),
-      validateEmail(),
-      validatePassword(),
-      validateRepeatPassword(),
-    ]
-    return validations.every((v) => !!v && typeof v === "boolean")
-  }, [first_name, last_name, email, password, repeatPassword])
-
-  const mutation = useMutation({
-    mutationFn: api.Auth.registerUser,
+  const validationSchema = Yup.object().shape({
+    firstName: Yup.string().required("First name is required"),
+    lastName: Yup.string().required("Last name is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string()
+      .required("Password is required")
+      .matches(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
+        "Must contain at least one uppercase letter, one lowercase letter, one number, and one special character, and be at least 6 characters long"
+      ),
+    repeatPassword: Yup.string()
+      .oneOf([Yup.ref("password")], "Passwords must match")
+      .required("Password confirmation is required"),
   })
 
-  function submitData(e: any) {
-    e.preventDefault()
+  const registerRequest = useMutation({
+    mutationFn: api.Auth.registerUser,
+    onSuccess(data, _variables, _context) {
+      LocalStorage.saveUser(data)
+      navigate("/dashboard")
+    },
+  })
+
+  function createUser(val: any) {
     console.log("trigger")
-    mutation.mutate({ first_name, last_name, email, password })
-    LocalStorage.saveUser({
-      first_name: first_name,
-      last_name: last_name,
-      email: email,
-    } as IUser)
-    navigate("/dashboard")
+    registerRequest.mutate({
+      first_name: val.firstName,
+      last_name: val.lastName,
+      email: val.email,
+      password: val.password,
+    })
   }
+
   function handlePageSwitch() {
     setSearchParams({ page: "login" })
   }
 
-  //   /Content
-  if (mutation.isSuccess) {
-    return <span>User is created!</span>
-  }
-
   return (
-    <form
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minWidth: "500px",
-        gap: "15px",
-      }}
-      onSubmit={submitData}>
-      <FormControl
-        isRequired
-        isInvalid={!validateName("first_name")}>
-        <FormLabel>First name</FormLabel>
-        <Input
-          type="text"
-          id="firstName"
-          focusBorderColor="#b4b1b0"
-          placeholder="Enter your first name"
-          value={first_name}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-        {!validateName("first_name") && (
-          <FormErrorMessage>Please enter your name</FormErrorMessage>
-        )}
-      </FormControl>
-      <Input
-        type="text"
-        id="secondName"
-        focusBorderColor="#b4b1b0"
-        placeholder="Enter your last name"
-        value={last_name}
-        onChange={(e) => setLastName(e.target.value)}
-      />
-      <Input
-        type="email"
-        id="email"
-        focusBorderColor="#b4b1b0"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <FormControl
-        isRequired
-        isInvalid={!validateName("first_name")}>
-        <FormLabel>Password</FormLabel>
-        <InputGroup>
-          <Input
-            type={showPassword ? "text" : "password"}
-            id="password"
-            focusBorderColor="#b4b1b0"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <InputRightElement width="4.5rem">
-            <Button
-              h="1.75rem"
-              size="sm"
-              onClick={() => setShow((p) => (p = !p))}>
-              {showPassword ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
-        </InputGroup>
-        {!validatePassword() && (
-          <FormErrorMessage>Please enter your password</FormErrorMessage>
-        )}
-      </FormControl>
-      <Input
-        type="password"
-        id="repeatPassword"
-        focusBorderColor="#b4b1b0"
-        placeholder="Repeat your password"
-        value={repeatPassword}
-        onChange={(e) => setRepeatedPassword(e.target.value)}
-      />
-      {mutation.isError ? (
-        <span>Error happend</span>
-      ) : (
-        <Button
-          type="submit"
-          id="submit"
-          background="#caf0f8"
-          color="#4f6b7c"
-          isLoading={mutation.isLoading}
-          isDisabled={!isFormValid}
-          fontSize="25px">
-          Register
-        </Button>
-      )}
+    <div className={style.formWrapper}>
+      <Formik
+        validateOnBlur
+        validateOnMount
+        initialValues={{
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          repeatPassword: "",
+        }}
+        onSubmit={createUser}
+        validationSchema={validationSchema}>
+        {({ errors, touched, handleChange, isValid }) => (
+          <Form>
+            {/* First Name */}
+            <FormControl isInvalid={!!errors.firstName && touched.lastName}>
+              <FormLabel
+                htmlFor="firstName"
+                style={{ textAlign: "center" }}>
+                First Name
+              </FormLabel>
+              <Field
+                as={Input}
+                type="text"
+                id="firstName"
+                name="firstName"
+                onChange={handleChange}
+              />
+              {errors.firstName && touched.firstName && (
+                <FormErrorMessage>{errors.firstName}</FormErrorMessage>
+              )}
+            </FormControl>
+            {/*  Last Name */}
+            <FormControl isInvalid={!!errors.lastName && touched.lastName}>
+              <FormLabel
+                htmlFor="lastName"
+                style={{ textAlign: "center" }}>
+                Last Name
+              </FormLabel>
+              <Field
+                as={Input}
+                type="text"
+                id="lastName"
+                name="lastName"
+                onChange={handleChange}
+              />
+              {errors.lastName && touched.lastName && (
+                <FormErrorMessage>{errors.lastName}</FormErrorMessage>
+              )}
+            </FormControl>
+            {/*  Email */}
+            <FormControl isInvalid={!!errors.email && touched.email}>
+              <FormLabel
+                htmlFor="email"
+                style={{ textAlign: "center" }}>
+                Email
+              </FormLabel>
+              <Field
+                as={Input}
+                type="email"
+                id="email"
+                name="email"
+                onChange={handleChange}
+              />
+              {errors.email && touched.email && (
+                <FormErrorMessage>{errors.email}</FormErrorMessage>
+              )}
+            </FormControl>
+            {/* Password */}
 
-      <Button
-        onClick={handlePageSwitch}
-        style={{
-          color: "#4f6b7c",
-          fontFamily: "cursive",
-          fontSize: "20px",
-        }}>
-        Already have an account
-      </Button>
-    </form>
+            <FormControl isInvalid={!!errors.password && touched.password}>
+              <FormLabel
+                htmlFor="password"
+                style={{ textAlign: "center" }}>
+                Password
+              </FormLabel>
+              <Field
+                as={Input}
+                type="password"
+                id="password"
+                name="password"
+                onChange={handleChange}
+              />
+              {errors.password && touched.password && (
+                <FormErrorMessage>{errors.password}</FormErrorMessage>
+              )}
+            </FormControl>
+            {/* Repeat Password */}
+            <FormControl
+              isInvalid={!!errors.repeatPassword && touched.repeatPassword}>
+              <FormLabel
+                htmlFor="repeatPassword"
+                style={{ textAlign: "center" }}>
+                Repeat Password
+              </FormLabel>
+              <Field
+                as={Input}
+                type="password"
+                id="repeatPassword"
+                name="repeatPassword"
+                onChange={handleChange}
+              />
+              {errors.repeatPassword && touched.repeatPassword && (
+                <FormErrorMessage>{errors.repeatPassword}</FormErrorMessage>
+              )}
+            </FormControl>
+            <div className={style.wrapper}>
+              <Button
+                type="submit"
+                isDisabled={!isValid}
+                className={style.button}
+                style={{
+                  background: "#caf0f8",
+                }}>
+                Register
+              </Button>
+              <Button
+                onClick={handlePageSwitch}
+                className={style.button}
+                style={{
+                  color: "#4f6b7c",
+                  fontFamily: "cursive",
+                  fontSize: "20px",
+                }}>
+                Already have an account
+              </Button>
+              {registerRequest.isError ? (
+                <Alert status="error">
+                  <AlertIcon />
+                  <AlertTitle>Account is not created!</AlertTitle>
+                  <AlertDescription>Please try again</AlertDescription>
+                </Alert>
+              ) : null}
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </div>
   )
 }
-
-// display="flex"
-// flexDirection="column"
-// alignItems="center"
-// justifyContent="center"
-// gap={15}
-// w="100%"
-// padding="10px"
-// color="black"
-// background="#f5f2fe"
-// boxShadow="rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"
-// borderRadius="10px"
