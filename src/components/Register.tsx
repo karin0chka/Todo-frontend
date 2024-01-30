@@ -1,21 +1,17 @@
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Input,
+  Input
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from "formik"
 import { useMutation } from "react-query"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
+import style from "../style.module.css"
 import api from "../utils/api"
 import { LocalStorage } from "../utils/handlers"
-import style from "../style.module.css"
 
 export default function Register() {
   const [_, setSearchParams] = useSearchParams()
@@ -77,7 +73,7 @@ export default function Register() {
         {({ errors, touched, handleChange, isValid }) => (
           <Form>
             {/* First Name */}
-            <FormControl isInvalid={!!errors.firstName && touched.lastName}>
+            <FormControl isInvalid={!!errors.firstName && touched.firstName}>
               <FormLabel
                 htmlFor="firstName"
                 style={{ textAlign: "center" }}>
@@ -188,13 +184,13 @@ export default function Register() {
                 }}>
                 Already have an account
               </Button>
-              {registerRequest.isError ? (
+              {/* {registerRequest.isError ? (
                 <Alert status="error">
                   <AlertIcon />
                   <AlertTitle>Account is not created!</AlertTitle>
                   <AlertDescription>Please try again</AlertDescription>
                 </Alert>
-              ) : null}
+              ) : null} */}
             </div>
           </Form>
         )}

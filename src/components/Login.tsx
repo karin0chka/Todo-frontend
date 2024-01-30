@@ -1,8 +1,4 @@
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Button,
   FormControl,
   FormErrorMessage,
@@ -13,12 +9,13 @@ import { Field, Form, Formik } from "formik"
 import { useMutation } from "react-query"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
+import style from "../style.module.css"
 import api from "../utils/api"
 import { LocalStorage } from "../utils/handlers"
-import style from "../style.module.css"
 
 export default function Login() {
   const [_, setSearchParams] = useSearchParams()
+
   const navigate = useNavigate()
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -26,15 +23,17 @@ export default function Login() {
       .required("Email is required"),
     password: Yup.string().required("Password is required"),
   })
+
   const loginRequest = useMutation({
     mutationFn: api.Auth.loginUser,
     onSuccess(data, _variables, _context) {
       LocalStorage.saveUser(data)
       navigate("/dashboard")
     },
-    onError(err, variables: TVariables, context?: TContext){
-      
-    },
+    // onError() {
+    //   setTimeout(function () {
+    //   })
+    // },
   })
 
   function logInUser(val: any) {
@@ -100,15 +99,17 @@ export default function Login() {
                 )}
               </FormControl>
               <div className={style.wrapper}>
-                <Button
-                  type="submit"
-                  isDisabled={!isValid}
-                  className={style.button}
-                  style={{
-                    background: "#caf0f8",
-                  }}>
-                  Login
-                </Button>
+                <>
+                  <Button
+                    type="submit"
+                    isDisabled={!isValid}
+                    className={style.button}
+                    style={{
+                      background: "#caf0f8",
+                    }}>
+                    Login
+                  </Button>
+                </>
                 <Button
                   onClick={handlePageSwitch}
                   className={style.button}
@@ -119,13 +120,6 @@ export default function Login() {
                   }}>
                   Don't have an account
                 </Button>
-                {loginRequest.isError ? (
-                  <Alert status="error">
-                    <AlertIcon />
-                    <AlertTitle>User is not defined</AlertTitle>
-                    <AlertDescription>Please try again</AlertDescription>
-                  </Alert>
-                ) : null}
               </div>
             </Form>
           )}

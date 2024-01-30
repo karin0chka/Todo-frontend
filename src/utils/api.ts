@@ -1,6 +1,7 @@
 import axios from "axios"
 import config from "./config"
 import { IUser, LoginUser } from "../../interfaces/user.interfaces"
+import { ITodo } from "../../interfaces/todo.interfaces"
 
 const api = config.API
 
@@ -28,7 +29,6 @@ namespace Auth {
     return (await axios.get(`${api}/health`)).data
   }
   export async function registerUser(userDto: IUser) {
-    console.log(`${api}/auth/register`)
     const response = await axios.post(`${api}/auth/register`, userDto)
     console.log(response.data)
     return response.data
@@ -75,8 +75,10 @@ namespace User {
 
 //do request
 namespace Todo {
-  export async function createTodo() {
-    const response = await axios.get(`${api}/todo/`)
+  export async function createTodo(Todo: ITodo) {
+    console.log(`${api}/todo/`)
+    const response = await axios.post(`${api}/todo/`, Todo)
+    console.log(response.data)
     return response.data
   }
   export async function updateTodo() {
