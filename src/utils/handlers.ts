@@ -3,7 +3,6 @@ import { IUser, LoginUser } from "../../interfaces/user.interfaces"
 export namespace LocalStorage {
   export function saveUser(user: IUser) {
     localStorage.setItem("user", JSON.stringify(user))
-    console.log(typeof JSON.stringify(user))
   }
 
 

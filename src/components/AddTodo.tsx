@@ -5,12 +5,10 @@ import {
   FormLabel,
   Input,
 } from "@chakra-ui/react"
-import { Field, Formik } from "formik"
+import { Field, Form, Formik } from "formik"
 import { useMutation } from "react-query"
-import { Form } from "react-router-dom"
 import style from "../style.module.css"
 import api from "../utils/api"
-import { LocalStorage } from "../utils/handlers"
 import * as Yup from "yup"
 
 export default function AddTodo() {
@@ -18,18 +16,15 @@ export default function AddTodo() {
     title: Yup.string().required("Title is required"),
     description: Yup.string().required("Description is required"),
   })
-  
+
   const todoRequest = useMutation({
     mutationFn: api.Todo.createTodo,
-    onError(err) {
-      console.error(err)
-    },
+   
   })
 
   function createTodo(val: any) {
     console.log("trigger")
     todoRequest.mutate({
-      user: val.user,
       title: val.title,
       description: val.description,
     })
@@ -41,7 +36,6 @@ export default function AddTodo() {
         validateOnBlur
         validateOnMount
         initialValues={{
-          user: LocalStorage.getUser(),
           title: "",
           description: "",
         }}
@@ -87,6 +81,7 @@ export default function AddTodo() {
             <Button
               type="submit"
               isDisabled={!isValid}
+              isLoading={todoRequest.isLoading}
               className={style.button}
               style={{
                 background: "#caf0f8",

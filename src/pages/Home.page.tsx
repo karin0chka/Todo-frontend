@@ -13,7 +13,7 @@ function Home() {
           color: "#4f6b7c",
           fontFamily: "cursive",
           margin: "5px",
-          fontSize: "40px",
+          fontSize: "30px",
         }}>
         <Link to="/auth?page=register">Create account</Link>
         <Link to="/auth?page=login">Log in</Link>

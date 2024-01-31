@@ -1,7 +1,8 @@
 import axios from "axios"
-import config from "./config"
-import { IUser, LoginUser } from "../../interfaces/user.interfaces"
 import { ITodo } from "../../interfaces/todo.interfaces"
+import { IUser, LoginUser } from "../../interfaces/user.interfaces"
+import config from "./config"
+import { LocalStorage } from "./handlers"
 
 const api = config.API
 
@@ -10,19 +11,28 @@ const reportId = 1
 axios.defaults.withCredentials = true
 
 axios.interceptors.response.use(
-  function (response) {
-    console.log("Response interceptor:", response)
-    return response
-  },
-  function (error) {
-    if (error.response.status === 401) {
-      console.error(error)
-      return "Please try again"
+  (resp) => resp,
+  async (error) => {
+    if (
+      error.response.status === 401 &&
+      !error.response.config.url.includes(`auth/refresh`)
+    ) {
+      const { status } = await Auth.refresh()
+
+      if (status === 200) {
+        return axios(error.response.config)
+      } else {
+        LocalStorage.removeUser()
+        location.reload()
+      }
     } else {
-      return Promise.reject(error)
+      LocalStorage.removeUser()
+      location.reload()
     }
+    return Promise.reject(error)
   }
 )
+
 // Auth request
 namespace Auth {
   export async function checkConnection() {
@@ -40,9 +50,9 @@ namespace Auth {
     return response.data
   }
   export async function refresh() {
-    const response = await axios.post(`${api}/auth/refresh`)
-    return response.data
+    return await axios.post<string>(`${api}/auth/refresh`)
   }
+
   export async function logOut() {
     const response = await axios.post(`${api}/auth/log-out`)
     return response.data
@@ -75,10 +85,8 @@ namespace User {
 
 //do request
 namespace Todo {
-  export async function createTodo(Todo: ITodo) {
-    console.log(`${api}/todo/`)
-    const response = await axios.post(`${api}/todo/`, Todo)
-    console.log(response.data)
+  export async function createTodo(todo: ITodo) {
+    const response = await axios.post(`${api}/todo/`, todo)
     return response.data
   }
   export async function updateTodo() {
