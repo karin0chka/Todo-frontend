@@ -24,15 +24,40 @@
   background-color: #f5f2fe;
   color: #4f6b7c;
 }
+.todoFormWrapper {
+  display: grid;
+  grid-template-columns: 400px auto 100px;
+  gap: 20px;
+  padding: 10px;
+  color: black;
+  font-family: cursive;
+  font-size: 25px;
+  background-color: #f5f2fe;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.inlineWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 5px;
+}
 .wrapper {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   justify-content: center;
   align-items: center;
+  padding: 5px;
+}
+.viewListStyle {
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-size: 25px;
+  list-style-type: none;
+  color: 	#636363;
 }
 
 .button {
   color: #4f6b7c;
   font-family: cursive;
-  margin: 5px;
 }

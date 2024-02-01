@@ -1,15 +1,18 @@
 import {
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
+    Button,
+    FormControl,
+    FormErrorMessage,
+    FormLabel,
+    Input
 } from "@chakra-ui/react"
-import { Field, Form, Formik } from "formik"
+import { Field, Form, Formik, useFormikContext } from "formik"
+
+import { AddIcon } from "@chakra-ui/icons"
 import { useMutation } from "react-query"
+import * as Yup from "yup"
+import { ITodo } from "../../interfaces/todo.interfaces"
 import style from "../style.module.css"
 import api from "../utils/api"
-import * as Yup from "yup"
 
 export default function AddTodo() {
   const validationSchema = Yup.object().shape({
@@ -19,36 +22,42 @@ export default function AddTodo() {
 
   const todoRequest = useMutation({
     mutationFn: api.Todo.createTodo,
-   
+    onSuccess: () => {
+      const formikContext = useFormikContext()
+      if (formikContext) {
+        formikContext.resetForm()
+      }
+    },
   })
 
-  function createTodo(val: any) {
+  function createTodo(val: ITodo) {
     console.log("trigger")
     todoRequest.mutate({
       title: val.title,
       description: val.description,
     })
   }
+  const handleSubmit = (values: ITodo) => {
+    createTodo(values)
+  }
 
   return (
-    <div className={style.formWrapper}>
-      <Formik
-        validateOnBlur
-        validateOnMount
-        initialValues={{
-          title: "",
-          description: "",
-        }}
-        onSubmit={createTodo}
-        validationSchema={validationSchema}>
-        {({ errors, touched, handleChange, isValid }) => (
-          <Form>
-            <FormControl isInvalid={!!errors.title && touched.title}>
-              <FormLabel
-                htmlFor="title"
-                style={{ textAlign: "center" }}>
-                Todo title
-              </FormLabel>
+    <Formik
+      validateOnBlur
+      validateOnMount
+      initialValues={{
+        title: "",
+        description: "",
+      }}
+      onSubmit={handleSubmit}
+      validationSchema={validationSchema}>
+      {({ errors, touched, handleChange, isValid }) => (
+        <Form>
+          <div className={style.todoFormWrapper}>
+            <FormControl
+              isInvalid={!!errors.title && touched.title}
+              className={style.inlineWrapper}>
+              <FormLabel htmlFor="title">Title:</FormLabel>
               <Field
                 as={Input}
                 type="text"
@@ -56,28 +65,27 @@ export default function AddTodo() {
                 name="title"
                 onChange={handleChange}
               />
+
               {errors.title && touched.title && (
                 <FormErrorMessage>{errors.title}</FormErrorMessage>
               )}
             </FormControl>
             <FormControl
-              isInvalid={!!errors.description && touched.description}>
-              <FormLabel
-                htmlFor="description"
-                style={{ textAlign: "center" }}>
-                Todo description
-              </FormLabel>
+              isInvalid={!!errors.description && touched.description}
+              className={style.inlineWrapper}>
+              <FormLabel htmlFor="description">Description:</FormLabel>
               <Field
-                as={Input}
                 type="text"
                 id="description"
                 name="description"
+                as={Input}
                 onChange={handleChange}
               />
               {errors.description && touched.description && (
                 <FormErrorMessage>{errors.description}</FormErrorMessage>
               )}
             </FormControl>
+
             <Button
               type="submit"
               isDisabled={!isValid}
@@ -85,13 +93,15 @@ export default function AddTodo() {
               className={style.button}
               style={{
                 background: "#caf0f8",
+                height: "40px",
               }}>
-              Add Todo
+              <AddIcon boxSize={3} />
             </Button>
-            {/* <DeleteTodo /> */}
-          </Form>
-        )}
-      </Formik>
-    </div>
+          </div>
+
+          {/* <DeleteTodo /> */}
+        </Form>
+      )}
+    </Formik>
   )
 }

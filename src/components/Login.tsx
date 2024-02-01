@@ -30,10 +30,6 @@ export default function Login() {
       LocalStorage.saveUser(data)
       navigate("/dashboard")
     },
-    // onError() {
-    //   setTimeout(function () {
-    //   })
-    // },
   })
 
   function logInUser(val: any) {
@@ -99,17 +95,15 @@ export default function Login() {
                 )}
               </FormControl>
               <div className={style.wrapper}>
-                <>
-                  <Button
-                    type="submit"
-                    isDisabled={!isValid}
-                    className={style.button}
-                    style={{
-                      background: "#caf0f8",
-                    }}>
-                    Login
-                  </Button>
-                </>
+                <Button
+                  type="submit"
+                  isDisabled={!isValid}
+                  className={style.button}
+                  style={{
+                    background: "#caf0f8",
+                  }}>
+                  Login
+                </Button>
                 <Button
                   onClick={handlePageSwitch}
                   className={style.button}

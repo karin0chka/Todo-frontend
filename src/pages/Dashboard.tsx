@@ -1,13 +1,12 @@
 import AddTodo from "../components/AddTodo"
-import style from "../style.module.css"
+import ViewTodo from "../components/VievTodo"
 export default function Dashboard() {
   return (
-    <main
-      className={style.wrapper}
+    <main 
       style={{ flexGrow: 1 }}>
          <AddTodo />
-        {/* <ViewTodo />
-        <UpdateTodo />
+         <ViewTodo />
+        {/* <UpdateTodo />
         <DeleteTodo /> */}
       </main>
   )

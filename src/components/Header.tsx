@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import LogOut from "./LogOut"
 
 export default function Header() {
   return (
@@ -10,9 +11,9 @@ export default function Header() {
         fontSize: 30,
         fontFamily: "cursive",
         color: "#4f6b7c",
-
       }}>
       <Link to="/"> TODO</Link>
+      <LogOut />
     </header>
   )
 }

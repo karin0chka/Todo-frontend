@@ -184,13 +184,6 @@ export default function Register() {
                 }}>
                 Already have an account
               </Button>
-              {/* {registerRequest.isError ? (
-                <Alert status="error">
-                  <AlertIcon />
-                  <AlertTitle>Account is not created!</AlertTitle>
-                  <AlertDescription>Please try again</AlertDescription>
-                </Alert>
-              ) : null} */}
             </div>
           </Form>
         )}
