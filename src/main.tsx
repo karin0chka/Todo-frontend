@@ -11,7 +11,18 @@ import { LocalStorage } from "./utils/handlers"
 import Header from "./components/Header"
 import Footer from "./components/Footer"
 
-const queryClient = new QueryClient()
+const twentyFourHoursInMs = 1000 * 60 * 60 * 24
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      retry: false,
+      staleTime: twentyFourHoursInMs,
+    },
+  },
+})
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 
@@ -41,7 +52,8 @@ const router = createBrowserRouter([
     ),
     loader: () => {
       LocalStorage.getUser()
-      // if (!user) return redirect("/auth?page=login")
+      const user = LocalStorage.getUser()
+      if (!user) return redirect("/auth?page=login")
       return null
     },
   },

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react"
 import { useSearchParams } from "react-router-dom"
-import Login from "../components/Login"
-import Register from "../components/Register"
+import Login from "../auth_components/Login"
+import Register from "../auth_components/Register"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 

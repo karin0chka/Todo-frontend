@@ -22,10 +22,12 @@ axios.interceptors.response.use(
       if (status === 200) {
         return axios(error.response.config)
       } else {
+        console.log("Remove on failed refresh")
         LocalStorage.removeUser()
         location.reload()
       }
     } else {
+      console.log("Remove on failed both")
       LocalStorage.removeUser()
       location.reload()
     }
@@ -78,7 +80,7 @@ namespace User {
     return response.data
   }
   export async function userTodos() {
-    const response = await axios.get(`${api}/user/todos`)
+    const response = await axios.get<any[]>(`${api}/user/todos`)
     return response.data
   }
 }

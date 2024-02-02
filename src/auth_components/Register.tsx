@@ -73,6 +73,7 @@ export default function Register() {
         {({ errors, touched, handleChange, isValid }) => (
           <Form>
             {/* First Name */}
+            {/* VStack */}
             <FormControl isInvalid={!!errors.firstName && touched.firstName}>
               <FormLabel
                 htmlFor="firstName"
