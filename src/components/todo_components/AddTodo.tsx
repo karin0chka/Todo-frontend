@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControl,
   FormErrorMessage,
@@ -11,8 +10,8 @@ import { Field, Form, Formik } from "formik"
 import { AddIcon } from "@chakra-ui/icons"
 import { useMutation } from "react-query"
 import * as Yup from "yup"
-import style from "../style.module.css"
-import api from "../utils/api"
+import style from "../../style.module.css"
+import api from "../../utils/api"
 
 interface AddTodoProps {
   refetch: () => void
@@ -39,7 +38,6 @@ export default function AddTodo({ refetch }: AddTodoProps) {
         title: "",
         description: "",
       }}
-      style={{ width: "100%" }}
       onSubmit={(values, { setSubmitting, resetForm }) => {
         todoRequest.mutate(values, { onSuccess: () => resetForm() })
         setSubmitting(false)

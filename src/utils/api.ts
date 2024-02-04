@@ -1,6 +1,6 @@
 import axios from "axios"
-import { ITodo } from "../../interfaces/todo.interfaces"
-import { IUser, LoginUser } from "../../interfaces/user.interfaces"
+import { ITodo } from "../../interfaces/interfaces"
+import { IUser, LoginUser } from "../../interfaces/interfaces"
 import config from "./config"
 import { LocalStorage } from "./handlers"
 
@@ -40,7 +40,9 @@ namespace Auth {
   export async function checkConnection() {
     return (await axios.get(`${api}/health`)).data
   }
-  export async function registerUser(userDto: IUser) {
+  export async function registerUser(
+    userDto: Pick<IUser, "email" | "first_name" | "last_name" | "password">
+  ) {
     const response = await axios.post(`${api}/auth/register`, userDto)
     console.log(response.data)
     return response.data
@@ -87,7 +89,7 @@ namespace User {
 
 //do request
 namespace Todo {
-  export async function createTodo(todo: ITodo) {
+  export async function createTodo(todo: Pick<ITodo, "title" | "description">) {
     const response = await axios.post(`${api}/todo/`, todo)
     return response.data
   }

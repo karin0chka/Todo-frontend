@@ -25,7 +25,6 @@
   color: #4f6b7c;
 }
 .dashboardStyle {
-
   display: grid;
   grid-template-columns: 400px 400px 0px;
   align-items: center;
@@ -39,14 +38,16 @@
   align-items: center;
   padding: 5px;
   gap: 10px;
+  width: 100%;
 }
 .viewListStyle {
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   font-size: 15px;
   list-style-type: none;
   color: #636363;
-  overflow-y:auto;
+  overflow-y: auto;
   height: 100%;
+  width: 100%;
 }
 
 .button {

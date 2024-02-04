@@ -9,9 +9,9 @@ import { Field, Form, Formik } from "formik"
 import { useMutation } from "react-query"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
-import style from "../style.module.css"
-import api from "../utils/api"
-import { LocalStorage } from "../utils/handlers"
+import style from "../../style.module.css"
+import api from "../../utils/api"
+import { LocalStorage } from "../../utils/handlers"
 
 export default function Login() {
   const [_, setSearchParams] = useSearchParams()

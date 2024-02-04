@@ -1,6 +1,6 @@
 import { useMutation } from "react-query"
-import api from "../utils/api"
-import { LocalStorage } from "../utils/handlers"
+import api from "../../utils/api"
+import { LocalStorage } from "../../utils/handlers"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@chakra-ui/react"
 

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import LogOut from "../auth_components/LogOut"
+import LogOut from "./auth_components/LogOut"
 
 export default function Header() {
   return (

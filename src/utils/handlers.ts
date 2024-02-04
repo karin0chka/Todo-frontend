@@ -1,4 +1,4 @@
-import { IUser, LoginUser } from "../../interfaces/user.interfaces"
+import { IUser, LoginUser } from "../../interfaces/interfaces"
 
 export namespace LocalStorage {
   export function saveUser(user: IUser) {
