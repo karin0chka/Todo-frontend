@@ -31,8 +31,8 @@ export type ITodo = {
   description: string
   is_done: boolean
   user: IUser
-}
-
+} & IDefault
+ 
 export type IReport = {
   user_id: number
   title: string
@@ -40,7 +40,7 @@ export type IReport = {
   is_completed: boolean
   is_reviewed: boolean
   media_url: string
-}
+} 
 
 export type LoginUser = {
   email: string

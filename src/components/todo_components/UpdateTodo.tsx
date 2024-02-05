@@ -1,3 +1,4 @@
+import { CheckIcon, EditIcon } from "@chakra-ui/icons"
 import {
   Button,
   FormControl,
@@ -12,18 +13,51 @@ import {
   ModalOverlay,
   Textarea,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from "formik"
+import { useMutation, useQueryClient } from "react-query"
 import * as Yup from "yup"
+import { QueryName } from "../../../interfaces/enum"
 import { ITodo } from "../../../interfaces/interfaces"
-import { EditIcon } from "@chakra-ui/icons"
+import api from "../../utils/api"
 
 export default function UpdateTodo({ todo }: { todo: ITodo }) {
+  const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
     description: Yup.string().required("Description is required"),
   })
+  const queryClient = useQueryClient()
+
+  const {
+    mutate,
+    isLoading: todoIsUpdating,
+    isSuccess,
+  } = useMutation({
+    mutationFn: api.Todo.updateTodo,
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: [QueryName.GetTodos] })
+    },
+    onError(error) {
+      console.log(error)
+      toast({
+        title: "Something went wrong",
+        // description: "We've created your account for you.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    },
+  })
+
+  function handleSubmit() {
+    setTimeout(() => {
+      onClose()
+    }, 1500)
+  }
+
   return (
     <>
       <Button
@@ -42,12 +76,10 @@ export default function UpdateTodo({ todo }: { todo: ITodo }) {
           <Formik
             validateOnBlur
             validateOnMount
-            initialValues={{
-              title: todo.title,
-              description: todo.description,
-            }}
+            initialValues={todo}
             onSubmit={(values, { setSubmitting, resetForm }) => {
-              // todoRequest.mutate(values, { onSuccess: () => resetForm() })
+              mutate(values, { onSuccess: () => resetForm() })
+              console.log("->   ", values)
               setSubmitting(false)
             }}
             validationSchema={validationSchema}>
@@ -92,9 +124,12 @@ export default function UpdateTodo({ todo }: { todo: ITodo }) {
                     Close
                   </Button>
                   <Button
+                    type="submit"
                     isDisabled={!isValid}
-                    variant="ghost">
-                    Update
+                    isLoading={todoIsUpdating}
+                    variant="ghost"
+                    onClick={handleSubmit}>
+                    {isSuccess ? <CheckIcon /> : "Update"}
                   </Button>
                 </ModalFooter>
               </Form>

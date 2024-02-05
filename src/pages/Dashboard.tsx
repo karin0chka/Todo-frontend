@@ -6,20 +6,22 @@ import {
   List,
   Spinner,
 } from "@chakra-ui/react"
-import { useState } from "react"
 import { useQuery } from "react-query"
-import style from "../style.module.css"
 import AddTodo from "../components/todo_components/AddTodo"
 import Todo from "../components/todo_components/Todo"
+import style from "../style.module.css"
 import api from "../utils/api"
+import { QueryName } from "../../interfaces/enum"
 
 export default function Dashboard() {
-  const [renderKey, setRenderKey] = useState(0)
-  function refetch() {
-    setRenderKey(renderKey + 1)
-  }
+  const {
+    data: todos,
+    error,
+    isLoading,
+  } = useQuery(QueryName.GetTodos, api.User.userTodos)
 
-  const { data: todos, error, isLoading } = useQuery("todo", api.User.userTodos)
+
+  
 
   return (
     <main
@@ -37,7 +39,7 @@ export default function Dashboard() {
         padding="10px">
         <Card boxShadow="lg">
           <CardBody style={{ display: "flex", alignItems: "center" }}>
-            <AddTodo refetch={refetch} />
+            <AddTodo />
           </CardBody>
         </Card>
         <Card boxShadow="lg">

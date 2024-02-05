@@ -4,29 +4,42 @@ import {
   FormErrorMessage,
   Input,
   Textarea,
+  useToast,
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from "formik"
 
 import { AddIcon } from "@chakra-ui/icons"
-import { useMutation } from "react-query"
+import { useMutation, useQueryClient } from "react-query"
 import * as Yup from "yup"
 import style from "../../style.module.css"
 import api from "../../utils/api"
+import { QueryName } from "../../../interfaces/enum"
 
-interface AddTodoProps {
-  refetch: () => void
-}
-
-export default function AddTodo({ refetch }: AddTodoProps) {
+export default function AddTodo() {
+  const toast = useToast()
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
     description: Yup.string().required("Description is required"),
   })
 
-  const todoRequest = useMutation({
+  const queryClient = useQueryClient()
+
+  const {
+    isLoading: isLoadingAddTodo,
+    mutate,
+  } = useMutation({
     mutationFn: api.Todo.createTodo,
     onSuccess() {
-      refetch
+      queryClient.invalidateQueries({ queryKey: [QueryName.GetTodos] })
+    },
+    onError() {
+      toast({
+        title: "Something went wrong",
+        // description: "We've created your account for you.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
     },
   })
 
@@ -39,7 +52,7 @@ export default function AddTodo({ refetch }: AddTodoProps) {
         description: "",
       }}
       onSubmit={(values, { setSubmitting, resetForm }) => {
-        todoRequest.mutate(values, { onSuccess: () => resetForm() })
+        mutate(values, { onSuccess: () => resetForm() })
         setSubmitting(false)
       }}
       validationSchema={validationSchema}>
@@ -81,7 +94,7 @@ export default function AddTodo({ refetch }: AddTodoProps) {
           <Button
             type="submit"
             isDisabled={!isValid}
-            isLoading={todoRequest.isLoading}
+            isLoading={isLoadingAddTodo}
             className={style.button}
             style={{
               background: "#caf0f8",

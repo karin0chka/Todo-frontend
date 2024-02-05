@@ -4,6 +4,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  useToast,
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from "formik"
 import { useMutation } from "react-query"
@@ -15,6 +16,7 @@ import { LocalStorage } from "../../utils/handlers"
 
 export default function Login() {
   const [_, setSearchParams] = useSearchParams()
+  const toast = useToast()
 
   const navigate = useNavigate()
   const validationSchema = Yup.object().shape({
@@ -30,10 +32,19 @@ export default function Login() {
       LocalStorage.saveUser(data)
       navigate("/dashboard")
     },
+    onError() {
+      toast({
+        title: "Something went wrong",
+        // description: "We've created your account for you.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    },
   })
 
   function logInUser(val: any) {
-    console.log("trigger")
+    console.log("triggered")
     loginRequest.mutate({
       email: val.email,
       password: val.password,
@@ -99,11 +110,13 @@ export default function Login() {
                   type="submit"
                   isDisabled={!isValid}
                   className={style.button}
+                  isLoading={loginRequest.isLoading}
                   style={{
                     background: "#caf0f8",
                   }}>
                   Login
                 </Button>
+
                 <Button
                   onClick={handlePageSwitch}
                   className={style.button}

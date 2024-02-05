@@ -6,7 +6,6 @@ import { LocalStorage } from "./handlers"
 
 const api = config.API
 
-const userId = 1
 const reportId = 1
 axios.defaults.withCredentials = true
 
@@ -74,11 +73,12 @@ namespace User {
     return response.data
   }
   export async function updateUserInfo() {
-    const response = await axios.put(`${api}/user/`)
+    //@ts-ignore
+    const response = await axios.put(`${api}/user/:${user.id}`)
     return response.data
   }
   export async function deleteUser() {
-    const response = await axios.delete(`${api}/user/${userId}`)
+    const response = await axios.delete(`${api}/user/`)
     return response.data
   }
   export async function userTodos() {
@@ -91,14 +91,18 @@ namespace User {
 namespace Todo {
   export async function createTodo(todo: Pick<ITodo, "title" | "description">) {
     const response = await axios.post(`${api}/todo/`, todo)
+    console.log(response.data)
     return response.data
   }
-  export async function updateTodo() {
-    const response = await axios.put(`${api}/todo/${userId}`)
+  export async function updateTodo(todo: ITodo) {
+    console.log(todo.id)
+    const response = await axios.put(`${api}/todo/${todo.id}`, todo)
+    console.log(response)
+    console.log(response.data)
     return response.data
   }
   export async function deleteTodo() {
-    const response = await axios.delete(`${api}/todo/${userId}`)
+    const response = await axios.delete(`${api}/todo/}`)
     return response.data
   }
 }
