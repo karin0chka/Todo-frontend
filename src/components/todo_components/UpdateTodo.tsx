@@ -16,6 +16,7 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from "formik"
+import { useEffect } from "react"
 import { useMutation, useQueryClient } from "react-query"
 import * as Yup from "yup"
 import { QueryName } from "../../../interfaces/enum"
@@ -35,6 +36,7 @@ export default function UpdateTodo({ todo }: { todo: ITodo }) {
     mutate,
     isLoading: todoIsUpdating,
     isSuccess,
+    reset,
   } = useMutation({
     mutationFn: api.Todo.updateTodo,
     onSuccess() {
@@ -44,7 +46,6 @@ export default function UpdateTodo({ todo }: { todo: ITodo }) {
       console.log(error)
       toast({
         title: "Something went wrong",
-        // description: "We've created your account for you.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -52,11 +53,14 @@ export default function UpdateTodo({ todo }: { todo: ITodo }) {
     },
   })
 
-  function handleSubmit() {
-    setTimeout(() => {
-      onClose()
-    }, 1500)
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      setTimeout(() => {
+        onClose()
+        reset()
+      }, 1200)
+    }
+  }, [isSuccess])
 
   return (
     <>
@@ -77,8 +81,8 @@ export default function UpdateTodo({ todo }: { todo: ITodo }) {
             validateOnBlur
             validateOnMount
             initialValues={todo}
-            onSubmit={(values, { setSubmitting, resetForm }) => {
-              mutate(values, { onSuccess: () => resetForm() })
+            onSubmit={(values, { setSubmitting }) => {
+              mutate(values)
               console.log("->   ", values)
               setSubmitting(false)
             }}
@@ -127,8 +131,7 @@ export default function UpdateTodo({ todo }: { todo: ITodo }) {
                     type="submit"
                     isDisabled={!isValid}
                     isLoading={todoIsUpdating}
-                    variant="ghost"
-                    onClick={handleSubmit}>
+                    variant="ghost">
                     {isSuccess ? <CheckIcon /> : "Update"}
                   </Button>
                 </ModalFooter>
