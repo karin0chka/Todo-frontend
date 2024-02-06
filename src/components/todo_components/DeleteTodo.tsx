@@ -1,3 +1,4 @@
+import { DeleteIcon } from "@chakra-ui/icons"
 import {
   AlertDialog,
   AlertDialogBody,
@@ -6,20 +7,49 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  useToast,
   useDisclosure,
 } from "@chakra-ui/react"
-import { useRef } from "react"
 
-export default function DeleteTodo() {
+import { useRef } from "react"
+import { useMutation, useQueryClient } from "react-query"
+import api from "../../utils/api"
+import { ITodo } from "../../../interfaces/interfaces"
+import { QueryName } from "../../../interfaces/enum"
+
+export default function DeleteTodo({ todo }: { todo: ITodo }) {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const cancelRef = useRef()
+  const cancelRef = useRef(null)
+  const toast = useToast()
+
+  const queryClient = useQueryClient()
+
+  const { mutate, isLoading: isLoadingDeleteTodo } = useMutation({
+    mutationFn: api.Todo.deleteTodo,
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: [QueryName.GetTodos] })
+    },
+    onError() {
+      toast({
+        title: "Something went wrong",
+        // description: "We've created your account for you.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    },
+  })
+
+  function deleteTodo() {
+    mutate(todo)
+  }
 
   return (
     <>
       <Button
         colorScheme="red"
         onClick={onOpen}>
-        Delete Customer
+        <DeleteIcon />
       </Button>
 
       <AlertDialog
@@ -31,7 +61,7 @@ export default function DeleteTodo() {
             <AlertDialogHeader
               fontSize="lg"
               fontWeight="bold">
-              Delete Customer
+              Delete Todo
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -46,7 +76,8 @@ export default function DeleteTodo() {
               </Button>
               <Button
                 colorScheme="red"
-                onClick={onClose}
+                isLoading={isLoadingDeleteTodo}
+                onClick={deleteTodo}
                 ml={3}>
                 Delete
               </Button>

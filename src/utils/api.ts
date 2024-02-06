@@ -97,12 +97,17 @@ namespace Todo {
   export async function updateTodo(todo: ITodo) {
     console.log(todo.id)
     const response = await axios.put(`${api}/todo/${todo.id}`, todo)
-    console.log(response)
     console.log(response.data)
     return response.data
   }
-  export async function deleteTodo() {
-    const response = await axios.delete(`${api}/todo/}`)
+  export async function isDoneTodo(todo: ITodo) {
+    console.log(todo.id)
+    const response = await axios.put(`${api}/todo/${todo.id}`, todo)
+    console.log(response.data)
+    return response.data
+  }
+  export async function deleteTodo(todo: ITodo) {
+    const response = await axios.delete(`${api}/todo/${todo.id}`)
     return response.data
   }
 }

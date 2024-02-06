@@ -40,7 +40,6 @@ const router = createBrowserRouter([
       return null
     },
   },
-
   {
     path: "/dashboard",
     element: (
@@ -50,13 +49,13 @@ const router = createBrowserRouter([
         <Footer />
       </>
     ),
-    // loader: (): => {
-    //   LocalStorage.getUser()
-      // const user = LocalStorage.getUser()
-      // if (!user) return redirect("/auth?page=login")
-      // return null
+    loader: () => {
+      LocalStorage.getUser()
+      const user = LocalStorage.getUser()
+      if (!user) return redirect("/auth?page=login")
+      return null
     },
- 
+  },
 ])
 
 root.render(
