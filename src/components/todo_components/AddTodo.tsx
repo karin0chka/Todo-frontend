@@ -19,15 +19,12 @@ export default function AddTodo() {
   const toast = useToast()
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
-    description: Yup.string().required("Description is required"),
+    description: Yup.string(),
   })
 
   const queryClient = useQueryClient()
 
-  const {
-    isLoading: isLoadingAddTodo,
-    mutate,
-  } = useMutation({
+  const { isLoading: isLoadingAddTodo, mutate } = useMutation({
     mutationFn: api.Todo.createTodo,
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: [QueryName.GetTodos] })

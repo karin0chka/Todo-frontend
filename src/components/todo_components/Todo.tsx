@@ -53,19 +53,20 @@ export default function Todo({ todo }: { todo: ITodo }) {
           <Box
             display="flex"
             flexDirection="column">
-            <h2>
-              <AccordionButton>
-                <Box
-                  flex="1"
-                  textAlign="left"
-                  width="100%">
-                  {todo.title}
-                </Box>
-                <AccordionIcon justifyContent="flex-eng" />
-              </AccordionButton>
-            </h2>
-            <AccordionPanel pb={4}>{todo.description}</AccordionPanel>
+            <AccordionButton>
+              <Box
+                flex="1"
+                textAlign="left"
+                width="100%">
+                <h2>{todo.title}</h2>
+              </Box>
+              {todo.description && <AccordionIcon justifyContent="flex-eng" />}
+            </AccordionButton>
+            {todo.description && (
+              <AccordionPanel pb={4}>{todo.description}</AccordionPanel>
+            )}
           </Box>
+
           <UpdateTodo todo={todo} />
           <DeleteTodo todo={todo} />
         </AccordionItem>
