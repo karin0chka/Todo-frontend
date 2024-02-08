@@ -7,21 +7,28 @@ import {
   Box,
   Checkbox,
   ListItem,
+  useToast,
 } from "@chakra-ui/react"
 import { ITodo } from "../../../interfaces/interfaces"
-import UpdateTodo from "./UpdateTodo"
 import DeleteTodo from "./DeleteTodo"
+import UpdateTodo from "./UpdateTodo"
 import { useMutation } from "react-query"
 import api from "../../utils/api"
 
 export default function Todo({ todo }: { todo: ITodo }) {
-  const { mutate } = useMutation({
-    mutationFn: api.Todo.isDoneTodo,
+  const toast = useToast()
+  const { mutate, isLoading } = useMutation({
+    mutationFn: api.Todo.updateTodo,
+    onError(error) {
+      console.log(error)
+      toast({
+        title: "Something went wrong",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    },
   })
-
-  function todoIsDone() {
-    mutate(todo)
-  }
 
   return (
     <ListItem style={{ listStyleType: "none", padding: "5px" }}>
@@ -33,7 +40,16 @@ export default function Todo({ todo }: { todo: ITodo }) {
           <Checkbox
             alignItems="start"
             mt="10px"
-            isChecked={todoIsDone}></Checkbox>
+            isChecked={todo.is_done}
+            isDisabled={isLoading}
+            onChange={() => {
+              if (todo.is_done === false) {
+                todo.is_done = true
+              } else {
+                todo.is_done = false
+              }
+              mutate(todo)
+            }}></Checkbox>
           <Box
             display="flex"
             flexDirection="column">

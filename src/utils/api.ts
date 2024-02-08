@@ -3,6 +3,7 @@ import { ITodo } from "../../interfaces/interfaces"
 import { IUser, LoginUser } from "../../interfaces/interfaces"
 import config from "./config"
 import { LocalStorage } from "./handlers"
+// import { LocalStorage } from "./handlers"
 
 const api = config.API
 
@@ -100,12 +101,7 @@ namespace Todo {
     console.log(response.data)
     return response.data
   }
-  export async function isDoneTodo(todo: ITodo) {
-    console.log(todo.id)
-    const response = await axios.put(`${api}/todo/${todo.id}`, todo)
-    console.log(response.data)
-    return response.data
-  }
+
   export async function deleteTodo(todo: ITodo) {
     const response = await axios.delete(`${api}/todo/${todo.id}`)
     return response.data
