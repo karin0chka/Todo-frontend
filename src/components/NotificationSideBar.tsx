@@ -34,18 +34,27 @@ export function NotificationSideBar() {
     [tabIndex, rawNotifications]
   )
 
+  let SSE = useRef<EventSource|null>(null)
+
+  //TODO implement this logic as a hook
   async function fetchData() {
-    const eventSource = await api.Notification.connectToNotifications()
+    console.log("exist", SSE)
+    if (SSE.current) {
+      SSE.current.close()
+    }
+    SSE.current = await api.Notification.connectToNotifications()
 
     //when sse is open -> getAlluser notification and store them
-    eventSource.onopen = () => {
+    SSE.current.onopen = () => {
       api.Notification.getNotification().then((res) => {
         setRawNotifications(res)
       })
     }
-    eventSource.onerror = (e) => console.log("ERROR!", e)
+    SSE.current.onerror = () => {
+      setTimeout(fetchData, 1000 * 30)
+    }
     //use JSON parse(parse data) && push it to notifications state
-    eventSource.onmessage = (e) => {
+    SSE.current.onmessage = (e) => {
       const data = JSON.parse(e.data)
       if (isNotification(data)) {
         setRawNotifications((v) => {
@@ -54,14 +63,14 @@ export function NotificationSideBar() {
         })
       }
     }
-
-    return eventSource
   }
 
   useEffect(() => {
     fetchData()
     return () => {
-      // eventSource.close()
+      if (SSE.current) {
+        SSE.current.close()
+      }
     }
   }, [])
   return (
