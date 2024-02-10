@@ -1,47 +1,80 @@
-import { useEffect, useRef } from "react"
-import api from "../utils/api"
+import { ChatIcon } from "@chakra-ui/icons"
 import {
-  Button,
+  Box,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
-  Input,
+  IconButton,
+  Tab,
+  TabList,
+  Tabs,
   useDisclosure,
 } from "@chakra-ui/react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import api from "../utils/api"
+import { INotification } from "../../interfaces/interfaces"
+import { isNotification } from "../utils"
 
 export function NotificationSideBar() {
+  const [tabIndex, setTabIndex] = useState(0)
+
+  const handleTabsChange = (index: number) => {
+    setTabIndex(index)
+  }
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef(null)
 
-  const fetchData = async () => {
+  const [rawNotifications, setRawNotifications] = useState<INotification[]>([])
+  const activeNotifications = useMemo(
+    () => rawNotifications.filter((n) => n.is_read === (tabIndex === 1)),
+    [tabIndex, rawNotifications]
+  )
+
+  async function fetchData() {
     const eventSource = await api.Notification.connectToNotifications()
 
     //when sse is open -> getAlluser notification and store them
-    eventSource.onopen = () => console.log(">>> Connection opened!")
+    eventSource.onopen = () => {
+      api.Notification.getNotification().then((res) => {
+        setRawNotifications(res)
+      })
+    }
     eventSource.onerror = (e) => console.log("ERROR!", e)
     //use JSON parse(parse data) && push it to notifications state
     eventSource.onmessage = (e) => {
-      console.log(">>>", e.data)
+      const data = JSON.parse(e.data)
+      if (isNotification(data)) {
+        setRawNotifications((v) => {
+          v.push(data)
+          return v
+        })
+      }
     }
 
-    return () => eventSource.close()
+    return eventSource
   }
+
   useEffect(() => {
     fetchData()
-    return () => {}
+    return () => {
+      // eventSource.close()
+    }
   }, [])
   return (
     <>
-      <Button
+      <IconButton
         ref={btnRef}
         colorScheme="teal"
-        onClick={onOpen}>
-        Open
-      </Button>
+        onClick={onOpen}
+        isRound={true}
+        variant="solid"
+        aria-label="Notification"
+        icon={<ChatIcon />}
+      />
       <Drawer
         isOpen={isOpen}
         placement="right"
@@ -50,21 +83,21 @@ export function NotificationSideBar() {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Create your account</DrawerHeader>
+          <DrawerHeader textAlign="center">Notification</DrawerHeader>
 
           <DrawerBody>
-            <Input placeholder="Type here..." />
+            <Box>
+              <Tabs
+                index={tabIndex}
+                onChange={handleTabsChange}>
+                <TabList>
+                  <Tab>Unread</Tab>
+                  <Tab>Read</Tab>
+                </TabList>
+              </Tabs>
+            </Box>
+            <Box>{activeNotifications.length}</Box>
           </DrawerBody>
-
-          <DrawerFooter>
-            <Button
-              variant="outline"
-              mr={3}
-              onClick={onClose}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue">Save</Button>
-          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     </>

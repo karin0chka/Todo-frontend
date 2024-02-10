@@ -3,6 +3,7 @@ import {
   Button,
   FormControl,
   FormErrorMessage,
+  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -64,11 +65,16 @@ export default function UpdateTodo({ todo }: { todo: ITodo }) {
 
   return (
     <>
-      <Button
+      <IconButton
         onClick={onOpen}
-        marginLeft="auto">
-        <EditIcon />
-      </Button>
+        marginLeft="auto"
+        isRound={true}
+        variant="solid"
+        size="sm"
+        mt="5px"
+        aria-label="update button"
+        icon={<EditIcon />}
+      />
 
       <Modal
         isOpen={isOpen}

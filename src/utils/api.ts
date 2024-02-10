@@ -130,13 +130,8 @@ namespace Notification {
     return new EventSource(`${api}/notification/connect`, credentials)
   }
 
-  export async function createNotification(
-    notification: Pick<INotification, "title" | "message" | "is_read">
-  ) {
-    const response = await axios.post(
-      `${api}/notification/create`,
-      notification
-    )
+  export async function getNotification() {
+    const response = await axios.get(`${api}/notification/user-related`)
     return response.data
   }
 
@@ -149,7 +144,6 @@ namespace Notification {
     const response = await axios.delete(`${api}/notification/delete/${id}`)
     return response.data
   }
-  
 }
 
 export default { Auth, User, Todo, Report, Notification }

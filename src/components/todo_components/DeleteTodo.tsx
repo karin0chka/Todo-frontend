@@ -9,6 +9,7 @@ import {
   Button,
   useToast,
   useDisclosure,
+  IconButton,
 } from "@chakra-ui/react"
 
 import { useRef } from "react"
@@ -46,11 +47,16 @@ export default function DeleteTodo({ todo }: { todo: ITodo }) {
 
   return (
     <>
-      <Button
+      <IconButton
         colorScheme="red"
-        onClick={onOpen}>
-        <DeleteIcon />
-      </Button>
+        onClick={onOpen}
+        isRound={true}
+        variant="solid"
+        aria-label="delete button"
+        size="sm"
+        mt="5px"
+        icon={<DeleteIcon />}
+      />
 
       <AlertDialog
         isOpen={isOpen}

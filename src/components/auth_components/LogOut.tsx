@@ -34,7 +34,6 @@ const button: React.CSSProperties = {
   fontFamily: "cursive",
   color: "black",
   fontSize: 15,
-  float: "right",
   padding: "5px",
   margin: "5px",
 }
