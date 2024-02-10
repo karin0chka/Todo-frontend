@@ -32,7 +32,7 @@ export type ITodo = {
   is_done: boolean
   user: IUser
 } & IDefault
- 
+
 export type IReport = {
   user_id: number
   title: string
@@ -40,9 +40,16 @@ export type IReport = {
   is_completed: boolean
   is_reviewed: boolean
   media_url: string
-} 
+}
 
 export type LoginUser = {
   email: string
   password: string
 }
+
+export type INotification = {
+  title: string
+  message: string
+  is_read: boolean
+  user: IUser
+} & IDefault

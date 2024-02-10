@@ -1,9 +1,8 @@
 import axios from "axios"
-import { ITodo } from "../../interfaces/interfaces"
+import { INotification, ITodo } from "../../interfaces/interfaces"
 import { IUser, LoginUser } from "../../interfaces/interfaces"
 import config from "./config"
 import { LocalStorage } from "./handlers"
-// import { LocalStorage } from "./handlers"
 
 const api = config.API
 
@@ -123,4 +122,34 @@ namespace Report {
   }
 }
 
-export default { Auth, User, Todo, Report }
+namespace Notification {
+  export async function connectToNotifications() {
+    const credentials = {
+      withCredentials: true,
+    }
+    return new EventSource(`${api}/notification/connect`, credentials)
+  }
+
+  export async function createNotification(
+    notification: Pick<INotification, "title" | "message" | "is_read">
+  ) {
+    const response = await axios.post(
+      `${api}/notification/create`,
+      notification
+    )
+    return response.data
+  }
+
+  export async function updateNotification(id: Pick<INotification, "id">) {
+    const response = await axios.put(`${api}/notification/update/${id}`)
+    return response.data
+  }
+
+  export async function deleteNotification(id: Pick<INotification, "id">) {
+    const response = await axios.delete(`${api}/notification/delete/${id}`)
+    return response.data
+  }
+  
+}
+
+export default { Auth, User, Todo, Report, Notification }

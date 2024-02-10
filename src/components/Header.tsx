@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import LogOut from "./auth_components/LogOut"
 import { LocalStorage } from "../utils/handlers"
+import { NotificationSideBar } from "./NotificationSideBar"
 
 export default function Header() {
   return (
@@ -14,7 +15,9 @@ export default function Header() {
         color: "#4f6b7c",
       }}>
       <Link to="/"> TODO</Link>
+
       {LocalStorage.getUser() && <LogOut />}
+      {LocalStorage.getUser() && <NotificationSideBar />}
     </header>
   )
 }
